@@ -63,7 +63,6 @@ const App = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     const newPerson = { 
-      key : newName,
       name : newName,
       number: newPhoneNumber,
     }

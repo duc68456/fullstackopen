@@ -8,6 +8,24 @@ const getAllPersons = () => {
 }
 
 const addPerson = (newPerson) => {
+    // axios.get(baseurl)
+    //     .then(response => response.data)
+    //     .then(persons => persons.find(person => person.name === newPerson.name))
+    //     .then(person => {
+    //         console.log(person)
+    //         if(person) {
+    //             request = axios.put(`${baseurl}/${person.id}`, newPerson)
+    //         }  
+    //         else {
+    //             request = axios.post(baseurl, newPerson)
+    //         }
+    //     })
+        // .then(persons => persons.map(person => person.name))
+        // .then(personNames => personNames.find(newPerson.name))
+        // .then(isExist => {
+        //     if(isExist)
+        //         request = 
+        // })
     console.log(newPerson)
     const request = axios.post(baseurl, newPerson)
     return request.then(response => response.data)
