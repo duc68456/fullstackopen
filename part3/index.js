@@ -89,7 +89,7 @@ app.get('/api/persons/:id', (request, response, next) => {
       .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     // const id = request.params.id
     // persons = persons.filter(person => person.id !== id)
 
@@ -101,7 +101,7 @@ app.delete('/api/persons/:id', (request, response) => {
       .catch(error => next(error))
 })
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
   Person.findById(request.params.id)
     .then(person => {
@@ -118,6 +118,7 @@ app.put('/api/persons/:id', (request, response) => {
           })
       }
     })
+    .catch(error => next(error))
 })
 
 const generateId = () => {
@@ -127,7 +128,7 @@ const generateId = () => {
     return String(Math.floor(maxId + 1 + Math.random() * 9999))
 }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body;
     // const genId = generateId();
 
@@ -144,21 +145,32 @@ app.post('/api/persons', (request, response) => {
     })
     // persons = persons.concat(person)
     // response.json(person)
-    person.save().then(savedPerson =>
+    person.save()
+      .then(savedPerson =>
       response.json(savedPerson)
     )
+      .catch(error => {
+        // console.log(error)
+        next(error)
+      })
 })
 
 const errorHandler = (error, request, response, next) => {
   console.log(error.message)
+  console.log(error.name)
 
   if(error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id'})
+  } 
+  else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
+
+  next(error)
 }
 
 app.use(errorHandler)
 
-const PORT = 3001
+const PORT = process.env.PORT
 app.listen(PORT)
 console.log(`Server are running on PORT ${PORT}`)

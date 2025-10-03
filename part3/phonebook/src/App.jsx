@@ -67,11 +67,13 @@ const App = () => {
       number: newPhoneNumber,
     }
     const isExisted = persons.find(person => person.name === newPerson.name)
-    console.log(isExisted)
+    // console.log(isExisted)
     if (isExisted === undefined) {
-    console.log(newPerson.name)
-    console.log(newPerson.number)
-    personService.addPerson(newPerson).then(responsePerson => {
+    // console.log(newPerson.name)
+    // console.log(newPerson.number)
+    console.log(newPerson)
+    personService.addPerson(newPerson)
+      .then(responsePerson => {
       console.log(responsePerson)
       setMessage(`Added ${responsePerson.name}`)
       setPersons(persons.concat(responsePerson))
@@ -79,9 +81,16 @@ const App = () => {
         setMessage(null)}, 5000
       )
     })
+      .catch(error => {
+        console.log(error)
+        setErrorMessage(error.response?.data?.error)
+        setTimeout(() => {
+          setErrorMessage(null)}, 5000
+        )
+      })
     // setPersons(persons.concat(newPerson)) //
-    setNewName('')
-    setPhoneNumber('')
+    // setNewName('')
+    // setPhoneNumber('')
     }
     else {
       // alert(`${newName} is already added to phonebook`)
