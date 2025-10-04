@@ -26,13 +26,14 @@ const addPerson = (newPerson) => {
         //     if(isExist)
         //         request = 
         // })
-    console.log(newPerson)
+    // console.log(newPerson)
     const request = axios.post(baseurl, newPerson)
     return request
             .then(response => response.data)
-            .catch(error => {
-                console.log(error)
-                return Promise.reject(error)
+            .catch(errorMessages => {
+                // const errorMessages = errors.map(error => error)
+                console.log(errorMessages)
+                return Promise.reject(errorMessages)
             })
 }
 

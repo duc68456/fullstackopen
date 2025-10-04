@@ -150,20 +150,30 @@ app.post('/api/persons', (request, response, next) => {
       response.json(savedPerson)
     )
       .catch(error => {
-        // console.log(error)
+        console.log('post catch log: ""', error, '""')
         next(error)
       })
 })
 
 const errorHandler = (error, request, response, next) => {
-  console.log(error.message)
-  console.log(error.name)
+  console.log('errorHandler log: ', error.message)
+  console.log('errorHandler log: ', error.name)
 
   if(error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id'})
   } 
   else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
+    // return response.status(400).json({ error: error.message })
+    const errors = Object.values(error.errors)
+    .map(err => ({
+      path: err.path,
+      message: err.message,
+    }))
+    // console.log('*', errors, '*')
+    const errorMessages = errors.map(error =>  error.message )
+    // console.log('errorHandler log: ', errorMessages)
+    response.status(400).json(errorMessages)
+    // console.log('errorHandler log: ', errors, '""')
   }
 
   next(error)

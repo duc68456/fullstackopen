@@ -5,6 +5,7 @@ import Filter from './components/Filter.jsx'
 import personService from './services/persons'
 import Notification from './components/Notification'
 import ErrorNotification from './components/ErrorNotification'
+import ErrorNotifications from './components/ErrorNotifications'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -27,7 +28,8 @@ const App = () => {
 
   const [message, setMessage] = useState(null)
 
-  const [errorMessage, setErrorMessage] = useState(null)
+  // const [errorMessage, setErrorMessage] = useState(null)
+  const [errorMessages, setErrorMessages] = useState([])
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -71,7 +73,7 @@ const App = () => {
     if (isExisted === undefined) {
     // console.log(newPerson.name)
     // console.log(newPerson.number)
-    console.log(newPerson)
+    // console.log(newPerson)
     personService.addPerson(newPerson)
       .then(responsePerson => {
       console.log(responsePerson)
@@ -83,9 +85,9 @@ const App = () => {
     })
       .catch(error => {
         console.log(error)
-        setErrorMessage(error.response?.data?.error)
+        setErrorMessages(error.response?.data)
         setTimeout(() => {
-          setErrorMessage(null)}, 5000
+          setErrorMessages([])}, 5000
         )
       })
     // setPersons(persons.concat(newPerson)) //
@@ -105,7 +107,7 @@ const App = () => {
             person.id === isExisted.id ? returnedPerson : person
           )))
           .catch(error =>
-            setErrorMessage(`Information of ${isExisted.name} has already been removed from server`)
+            setErrorMessages(`Information of ${isExisted.name} has already been removed from server`)
           )
       }
     }
@@ -117,7 +119,8 @@ const App = () => {
 
       <Notification message = {message} />
 
-      <ErrorNotification message = {errorMessage} />
+      {/* <ErrorNotification message = {errorMessage} /> */}
+      <ErrorNotifications messages = {errorMessages}/>
 
       <Filter searchValue={searchValue}
               handleSearchChange={handleSearchChange}

@@ -1,5 +1,33 @@
 const mongoose = require('mongoose')
 
+const validator = (number) => {
+    let isAnyHyphen = false;
+    if (number.length < 8) return false;
+
+    let firstPart = "";
+    let secondPart = "";
+
+    for (let c of number) {
+        if (c === '-') {
+            if (isAnyHyphen) return false; 
+            isAnyHyphen = true;
+            continue;
+        }
+        if (!isAnyHyphen)
+            firstPart += c;
+        else
+            secondPart += c;
+    }
+
+    if (firstPart.length < 2 || firstPart.length > 3) return false;
+
+    for (let c of secondPart) {
+        if (c < '0' || c > '9') return false; 
+    }
+
+    return true;
+}
+
 const personSchema = new mongoose.Schema({
     // name: String,
     name: {
@@ -7,7 +35,16 @@ const personSchema = new mongoose.Schema({
         minLength: 3,
         required: true,
     },
-    number: String,
+    number: {
+        type: String,
+        validate: {
+            validator: validator,
+            message: props => { 
+                console.log('personSchema log: ', props);
+                return `${props.value} is not a valid number`;
+            },
+        },
+    },
 })
 
 const url = process.env.MONGODB_URI
