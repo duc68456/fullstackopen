@@ -1,186 +1,165 @@
-require('dotenv').config()
+require('dotenv').config();
 // const mongoose = require('mongoose')
-const express = require('express')
-const morgan = require('morgan')
-const Person = require('./models/person')
+const express = require('express');
+const morgan = require('morgan');
+const Person = require('./models/person');
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
-morgan.token('body', (request) => JSON.stringify(request.body))
+morgan.token('body', (request) => JSON.stringify(request.body));
 
-const morganFormat = ':method :url :status :res[content-length] - :response-time ms :body'
+// const morganFormat = ':method :url :status :res[content-length] - :response-time ms :body'
 // app.use(morgan(morganFormat))
 
 // const url = process.env.MONGODB_URI
 
 // mongoose.connect(url)
 
-let persons = 
-[
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+// const persons = [
+//   {
+//     id: '1',
+//     name: 'Arto Hellas',
+//     number: '040-123456'
+//   },
+//   {
+//     id: '2',
+//     name: 'Ada Lovelace',
+//     number: '39-44-5323523'
+//   },
+//   {
+//     id: '3',
+//     name: 'Dan Abramov',
+//     number: '12-43-234345'
+//   },
+//   {
+//     id: '4',
+//     name: 'Mary Poppendieck',
+//     number: '39-23-6423122'
+//   }
+// ];
 
-app.use(express.static('dist'))
+app.use(express.static('dist'));
 
 app.get('/api/persons', (request, response) => {
-    // response.json(persons)
-    Person.find({}).then(persons =>
-      response.json(persons)
-    )
-})
-
-app.get('/info', (request, response) => {
-    const count = persons.length;
-    const now = new Date()
-    response.send(
-    `<div>
-      Phonebook has info for ${count} people
-      <br/>
-      ${now}
-    </div>`
-    )
-})
+  // response.json(persons)
+  Person.find({}).then((persons) => response.json(persons));
+});
+// app.get('/info', (request, response) => {
+//   const count = persons.length;
+//   const now = new Date();
+//   response.send(
+//   `<div>
+//     Phonebook has info for ${count} people
+//     <br/>
+//     ${now}
+//   </div>`
+//   )
+// });
 
 app.get('/api/persons/:id', (request, response, next) => {
-    // const id = request.params.id
-    // const person = persons.find(person => person.id === id)
-    // if(!person) {
-    //     return response.status(404).end()
-    // } else {
-    //     response.json(person)
-    // }
-    // if(!persons.find(person => person.id === id)) {
-    //     return response.status(404).json({
-    //         error: 'Not found'
-    //     })
-    // }
-    // response.json(persons.find(person => person.id === id))
-    console.log(request.params.id)
-    Person.findById(request.params.id)
-      .then(person => {
-        if(!person) {
-          console.log(person)
-          return response.status(404).end()
-        } else {
-          return response.json(person)
-        }
-      })
-      .catch(error => next(error))
-})
+  // const id = request.params.id
+  // const person = persons.find(person => person.id === id)
+  // if(!person) {
+  //     return response.status(404).end()
+  // } else {
+  //     response.json(person)
+  // }
+  // if(!persons.find(person => person.id === id)) {
+  //     return response.status(404).json({
+  //         error: 'Not found'
+  //     })
+  // }
+  // response.json(persons.find(person => person.id === id))
+  console.log(request.params.id);
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (!person) {
+        console.log(person);
+        return response.status(404).end();
+      }
+      return response.json(person);
+    })
+    .catch((error) => next(error));
+});
 
 app.delete('/api/persons/:id', (request, response, next) => {
-    // const id = request.params.id
-    // persons = persons.filter(person => person.id !== id)
+  // const id = request.params.id
+  // persons = persons.filter(person => person.id !== id)
 
-    // response.status(204).end()
-    Person.findByIdAndDelete(request.params.id)
-      .then(result =>
-          response.status(204).end()
-      )
-      .catch(error => next(error))
-})
+  // response.status(204).end()
+  Person.findByIdAndDelete(request.params.id)
+    .then(() => response.status(204).end())
+    .catch((error) => next(error));
+});
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const { name, number } = request.body
+  const { name, number } = request.body;
   Person.findById(request.params.id)
-    .then(person => {
-      if(!person) {
-        return response.status(404).end()
-      } else {
-
-        person.name = name
-        person.number = number
-
-        return person.save()
-          .then(updatedPerson => {
-            response.json(updatedPerson)
-          })
+    .then((person) => {
+      if (!person) {
+        return response.status(404).end();
       }
-    })
-    .catch(error => next(error))
-})
 
-const generateId = () => {
-    const maxId = persons.length > 0 ?
-    0 : 
-    Math.max(...persons.map(person => person.id))
-    return String(Math.floor(maxId + 1 + Math.random() * 9999))
-}
+      const updatedPerson = {
+        ...person.toObject(),
+        name,
+        number,
+      };
+
+      return Person.findByIdAndUpdate(request.params.id, updatedPerson, { new: true })
+        .then((result) => {
+          response.json(result);
+        });
+    })
+    .catch((error) => next(error));
+});
 
 app.post('/api/persons', (request, response, next) => {
-    const body = request.body;
-    // const genId = generateId();
+  const { name, number } = request.body;
 
-    if(!body.name || !body.number) {
-      return response.status(400).end()
-    } 
-    if (persons.find(person => person.name === body.name)) {
-      return response.status(409).end()
-    }
-    const person = new Person({
-        // id : genId,
-        name : body.name,
-        number : body.number,
-    })
-    // persons = persons.concat(person)
-    // response.json(person)
-    person.save()
-      .then(savedPerson =>
-      response.json(savedPerson)
-    )
-      .catch(error => {
-        console.log('post catch log: ""', error, '""')
-        next(error)
-      })
-})
-
-const errorHandler = (error, request, response, next) => {
-  console.log('errorHandler log: ', error.message)
-  console.log('errorHandler log: ', error.name)
-
-  if(error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id'})
-  } 
-  else if (error.name === 'ValidationError') {
-    // return response.status(400).json({ error: error.message })
-    const errors = Object.values(error.errors)
-    .map(err => ({
-      path: err.path,
-      message: err.message,
-    }))
-    // console.log('*', errors, '*')
-    const errorMessages = errors.map(error =>  error.message )
-    // console.log('errorHandler log: ', errorMessages)
-    response.status(400).json(errorMessages)
-    // console.log('errorHandler log: ', errors, '""')
+  if (!name || !number) {
+    return response.status(400).end();
   }
 
-  next(error)
-}
+  const person = new Person({
+    name,
+    number,
+  });
 
-app.use(errorHandler)
+  return person.save()
+    .then((savedPerson) => response.json(savedPerson))
+    .catch((error) => {
+      console.log('post catch log: ""', error, '""');
+      next(error);
+    });
+});
 
-const PORT = process.env.PORT
-app.listen(PORT)
-console.log(`Server are running on PORT ${PORT}`)
+const errorHandler = (error, request, response, next) => {
+  console.log('errorHandler log: ', error.message);
+  console.log('errorHandler log: ', error.name);
+
+  const { name, errors: errObj } = error;
+
+  if (name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  }
+
+  if (name === 'ValidationError') {
+    const errors = Object.values(errObj).map(({ path, message }) => ({
+      path,
+      message,
+    }));
+    const errorMessages = errors.map(({ message }) => message);
+    return response.status(400).json(errorMessages);
+  }
+
+  return next(error);
+};
+
+app.use(errorHandler);
+
+const { PORT } = process.env;
+app.listen(PORT);
+console.log(`Server are running on PORT ${PORT}`);

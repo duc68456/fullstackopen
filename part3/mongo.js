@@ -1,14 +1,12 @@
-require('dotenv').config()
-const mongoose = require('mongoose')
-const Person = require('./models/person')
-
-main().catch(err => console.log(err));
+require('dotenv').config();
+const mongoose = require('mongoose');
+const Person = require('./models/person');
 
 async function main() {
   // const password = process.argv[2];
 
   // const url = `mongodb+srv://23520303_db_user:${password}@cluster0.lmstc2q.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-  const url = process.env.MONGODB_URI
+  const url = process.env.MONGODB_URI;
 
   await mongoose.connect(url);
 
@@ -29,19 +27,16 @@ async function main() {
 
     // await person.save();
     // console.log(`added ${person.name} number ${person.number} to phonebook`);
-    person.save().then(savedPerson => 
-      console.log(`added ${savedPerson.name} number ${savedPerson.number} to phonebook`)
-    )
+    person.save().then((savedPerson) => console.log(`added ${savedPerson.name} number ${savedPerson.number} to phonebook`));
   } else {
     const persons = await Person.findById({});
 
-    persons.map(person => 
-      console.log(`${person.name} ${person.number}`)
-    )
+    persons.map((person) => console.log(`${person.name} ${person.number}`));
   }
   mongoose.connection.close();
 }
 
+main().catch((err) => console.log(err));
 
 // const url = `mongodb+srv://23520303_db_user:${password}@cluster0.lmstc2q.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 
@@ -66,7 +61,7 @@ async function main() {
 
 // if (process.argv < 3) {
 //   Person.find({}).then(responses => {
-//     responses.map(response => 
+//     responses.map(response =>
 //       console.log(`${response.name} ${response.number}`)
 //     )
 //   })
