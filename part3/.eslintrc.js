@@ -1,11 +1,11 @@
 module.exports = {
   extends: ['airbnb-base'],
   env: {
-    'node': true,
-    'es2021': true
+    node: true,
+    es2021: true,
   },
-  'rules': {
+  rules: {
     'no-console': 'off',
-    'import/no-unresolved': 'off'
-  }
-}
+    'import/no-unresolved': 'off',
+  },
+};
